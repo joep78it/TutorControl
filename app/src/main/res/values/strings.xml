@@ -14,5 +14,8 @@
     <string name="lbl_stop">Stop</string>
     <string name="lbl_split">Split</string>
     <string name="lbl_head_journey">Viaggio</string>
+    <string name="lbl_velocita_ist">Velocità istantanea</string>
+    <string name="lbl_zero_kmh">0 Km/h</string>
+    <string name="lbl_velocita">Velocità</string>
 
 </resources>

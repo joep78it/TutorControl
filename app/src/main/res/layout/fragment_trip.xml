@@ -65,4 +65,25 @@
             android:layout_centerHorizontal="true"
             android:layout_weight="1" />
     </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/lbl_velocita"
+        android:id="@+id/textView2"
+        android:layout_below="@+id/chrTotal" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/lbl_zero_kmh"
+        android:id="@+id/txtVelIst"
+        android:layout_below="@+id/textView2"
+        android:layout_centerHorizontal="true"
+        android:textSize="60dp"
+        android:textStyle="bold"
+        android:gravity="center_horizontal" />
+
 </RelativeLayout>

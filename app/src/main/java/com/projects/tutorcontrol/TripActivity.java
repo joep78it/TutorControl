@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.Chronometer;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -36,6 +37,7 @@ import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 
+import java.util.Date;
 import java.util.Locale;
 
 
@@ -123,7 +125,29 @@ public class TripActivity extends FragmentActivity implements ActionBar.TabListe
         if (mUpdatesRequested) {
             mLocationClient.requestLocationUpdates(mLocationRequest, this);
         }
+
         //getLocation();
+
+        try {
+            Location mCurrentLocation = mLocationClient.getLastLocation();
+            /*
+            String msg = "Updated Location: " +
+                    Double.toString(mCurrentLocation.getLatitude()) + "," +
+                    Double.toString(mCurrentLocation.getLongitude()) + "\nSpeed:" + Float.toString(mCurrentLocation.getSpeed());
+
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+            */
+            if(myListener != null)
+            {
+                myListener.onLocationChanged(mCurrentLocation);
+            }
+        }
+        catch(Exception e1)
+        {
+            Toast.makeText(this, e1.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+
+
     }
 
     @Override
@@ -133,16 +157,17 @@ public class TripActivity extends FragmentActivity implements ActionBar.TabListe
 
     @Override
     public void onLocationChanged(Location location) {
+        /*
         String msg = "Updated Location: " +
                 Double.toString(location.getLatitude()) + "," +
                 Double.toString(location.getLongitude()) + "\nSpeed:" + Float.toString(location.getSpeed());
-
+        */
         if(myListener != null)
         {
             myListener.onLocationChanged(location);
         }
 
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
     // Define a DialogFragment that displays the error dialog
@@ -284,8 +309,8 @@ public class TripActivity extends FragmentActivity implements ActionBar.TabListe
          * handle callbacks.
          */
         mLocationClient = new LocationClient(this, this, this);
-        // Start with updates turned off
-        mUpdatesRequested = false;
+        // Start with updates turned on
+        mUpdatesRequested = true;
 
 
     }
@@ -400,6 +425,7 @@ public class TripActivity extends FragmentActivity implements ActionBar.TabListe
             if (position == 0) {
                 retFragment = JourneyFragment.newInstance(position + 1);
             }
+            myListener=(MyLocationListener) retFragment;
             return retFragment;
         }
 
@@ -448,7 +474,14 @@ public class TripActivity extends FragmentActivity implements ActionBar.TabListe
         private Location mCurrentLocation=null;
         private Location mPreviousLocation=null;
 
-        private Location startLocation=null;
+        private long startDistance=0;
+        private long splitDistance=0;
+
+        private long startTime=0;
+        private long splitTime=0;
+
+
+        private TextView txtVelIst;
 
         /**
          * Returns a new instance of this fragment for the given section
@@ -484,6 +517,8 @@ public class TripActivity extends FragmentActivity implements ActionBar.TabListe
                     stopMeasure();
                 }
             });
+
+            txtVelIst=(TextView) rootView.findViewById(R.id.txtVelIst);
 
             chrSplit = (Chronometer) rootView.findViewById(R.id.chrSplit);
             /*chrSplit.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
@@ -548,13 +583,24 @@ public class TripActivity extends FragmentActivity implements ActionBar.TabListe
 
                 currentState = STA_RUNNING;
                 btnStart.setText(getActivity().getResources().getText(R.string.lbl_split));
+
+                startDistance=0;
+                startTime=new Date().getTime();
+
+                splitDistance=0;
+                splitDistance=startTime;
+
             } else if (currentState == STA_RUNNING) {
                 chrSplit.stop();
                 chrSplit.setBase(SystemClock.elapsedRealtime());
                 chrSplit.start();
+
+                splitDistance=0;
+                splitDistance=new Date().getTime();
+
             }
 
-            startLocation=mCurrentLocation;
+
 
 
         }
@@ -577,11 +623,40 @@ public class TripActivity extends FragmentActivity implements ActionBar.TabListe
         @Override
         public void onLocationChanged(Location location) {
 
-            if(startLocation==null)
-                startLocation=mPreviousLocation;
+            long newDistance=0;
+            long currentTime=new Date().getTime();
 
             mPreviousLocation=mCurrentLocation;
             mCurrentLocation=location;
+
+            newDistance=getDistance();
+
+            startDistance+=newDistance;
+            splitDistance+=newDistance;
+
+            Toast.makeText(getActivity(),Double.toString((double)(3.6*(startDistance/(currentTime-startTime))/1000))+"\n"+Double.toString((double)(3.6*(splitDistance/(currentTime-splitTime))/1000)),Toast.LENGTH_LONG).show();
+
+            txtVelIst.setText(Float.toString(location.getSpeed()) + " Km/h");
+        }
+
+        private long getDistance()
+        {
+            //Calcola la distanza presente tra currentLocation e previousLocation
+            long distance=0;
+            long raggioSfera=6375000;   //Più o meno dalle nostre parti vale così...
+
+            if(mCurrentLocation != null && mPreviousLocation != null)
+            {
+                double diffLatRad=Math.abs(Math.toRadians(mCurrentLocation.getLatitude()) - Math.toRadians(mPreviousLocation.getLatitude()));
+                double diffLonRad=Math.abs(Math.toRadians(mCurrentLocation.getLongitude()) - Math.toRadians(mPreviousLocation.getLongitude()));
+
+                double distLat=diffLatRad * raggioSfera;
+                double distLon=diffLonRad * raggioSfera;
+
+                distance=(long) Math.sqrt(Math.pow(distLat,(double) 2)+Math.pow(distLon,(double) 2));
+            }
+
+            return distance;
         }
     }
 
