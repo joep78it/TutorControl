@@ -17,5 +17,9 @@
     <string name="lbl_velocita_ist">Velocità istantanea</string>
     <string name="lbl_zero_kmh">0 Km/h</string>
     <string name="lbl_velocita">Velocità</string>
+    <string name="lbl_min_max_sp_split">Velocità media e massima dall\'ultimo split</string>
+    <string name="lbl_med_max_sp_start">Velocità media e massima dallo start</string>
+    <string name="lbl_distanza">Distanza</string>
+    <string name="lbl_zero_dist">0 Km</string>
 
 </resources>

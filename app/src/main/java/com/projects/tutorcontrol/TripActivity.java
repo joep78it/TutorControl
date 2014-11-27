@@ -474,14 +474,26 @@ public class TripActivity extends FragmentActivity implements ActionBar.TabListe
         private Location mCurrentLocation=null;
         private Location mPreviousLocation=null;
 
-        private long startDistance=0;
-        private long splitDistance=0;
+        private double startDistance=0;
+        private double splitDistance=0;
 
         private long startTime=0;
         private long splitTime=0;
 
+        private double maxSpeedStart=0;
+        private double maxSpeedSplit=0;
+
+        private double mediumSpeedSplit=0;
+        private double mediumSpeedStart=0;
 
         private TextView txtVelIst;
+        private TextView txtMedSpeedSplit;
+        private TextView txtMaxSpeedSplit;
+        private TextView txtMedSpeedStart;
+        private TextView txtMaxSpeedStart;
+
+        private TextView txtDistSplit;
+        private TextView txtDistStart;
 
         /**
          * Returns a new instance of this fragment for the given section
@@ -519,6 +531,13 @@ public class TripActivity extends FragmentActivity implements ActionBar.TabListe
             });
 
             txtVelIst=(TextView) rootView.findViewById(R.id.txtVelIst);
+            txtMedSpeedSplit=(TextView) rootView.findViewById(R.id.txtSpMedSpl);
+            txtMaxSpeedSplit=(TextView) rootView.findViewById(R.id.txtSpMaxSpl);
+            txtMedSpeedStart=(TextView) rootView.findViewById(R.id.txtSpMedSta);
+            txtMaxSpeedStart=(TextView) rootView.findViewById(R.id.txtSpMaxSta);
+
+            txtDistSplit=(TextView) rootView.findViewById(R.id.txtSplitDist);
+            txtDistStart=(TextView) rootView.findViewById(R.id.txtStartDIst);
 
             chrSplit = (Chronometer) rootView.findViewById(R.id.chrSplit);
             /*chrSplit.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
@@ -537,6 +556,13 @@ public class TripActivity extends FragmentActivity implements ActionBar.TabListe
 
             if (savedInstanceState != null) {
                 currentState = savedInstanceState.getString("currState", STA_STOP);
+
+                startDistance=savedInstanceState.getDouble("startDistance", 0);
+                splitDistance=savedInstanceState.getDouble("splitDistance", 0);
+
+                startTime=savedInstanceState.getLong("startTime", 0);
+                splitTime=savedInstanceState.getLong("splitTime", 0);
+
             }
 
             if (currentState == STA_STOP) {
@@ -557,6 +583,13 @@ public class TripActivity extends FragmentActivity implements ActionBar.TabListe
             super.onSaveInstanceState(outState);
 
             outState.putString("currState", currentState);
+
+            outState.putDouble("startDistance", startDistance);
+            outState.putDouble("splitDistance", splitDistance);
+
+            outState.putLong("startTime", startTime);
+            outState.putLong("splitTime", splitTime);
+
         }
 
         private void stopMeasure() {
@@ -586,9 +619,12 @@ public class TripActivity extends FragmentActivity implements ActionBar.TabListe
 
                 startDistance=0;
                 startTime=new Date().getTime();
+                maxSpeedStart=0;
+
 
                 splitDistance=0;
-                splitDistance=startTime;
+                splitTime=startTime;
+                maxSpeedSplit=0;
 
             } else if (currentState == STA_RUNNING) {
                 chrSplit.stop();
@@ -596,10 +632,10 @@ public class TripActivity extends FragmentActivity implements ActionBar.TabListe
                 chrSplit.start();
 
                 splitDistance=0;
-                splitDistance=new Date().getTime();
+                splitTime=new Date().getTime();
+                maxSpeedSplit=0;
 
             }
-
 
 
 
@@ -623,27 +659,51 @@ public class TripActivity extends FragmentActivity implements ActionBar.TabListe
         @Override
         public void onLocationChanged(Location location) {
 
-            long newDistance=0;
+            double newDistance=0;
             long currentTime=new Date().getTime();
+            double currentSpeed=0;
 
-            mPreviousLocation=mCurrentLocation;
-            mCurrentLocation=location;
+            if(currentState==STA_RUNNING)
+            {
+                mPreviousLocation = mCurrentLocation;
+                mCurrentLocation = location;
 
-            newDistance=getDistance();
+                newDistance = getDistance();
 
-            startDistance+=newDistance;
-            splitDistance+=newDistance;
+                startDistance += newDistance;
+                splitDistance += newDistance;
 
-            Toast.makeText(getActivity(),Double.toString((double)(3.6*(startDistance/(currentTime-startTime))/1000))+"\n"+Double.toString((double)(3.6*(splitDistance/(currentTime-splitTime))/1000)),Toast.LENGTH_LONG).show();
+                currentSpeed = location.getSpeed() * 3.6;
 
-            txtVelIst.setText(Float.toString(location.getSpeed()) + " Km/h");
+                if (currentSpeed > maxSpeedStart)
+                    maxSpeedStart = currentSpeed;
+
+                if (currentSpeed > maxSpeedSplit)
+                    maxSpeedSplit = currentSpeed;
+
+                mediumSpeedSplit = 3.6 * (splitDistance / (currentTime - splitTime)) / 1000;
+                mediumSpeedStart = 3.6 * (startDistance / (currentTime - startTime)) / 1000;
+
+                Toast.makeText(getActivity(),String.format("%.0f",splitDistance)+"\n"+String.format("%.0f",currentTime)+"\n"+String.format("%.0f",splitTime),Toast.LENGTH_LONG);
+                Toast.makeText(getActivity(),String.format("%.0f",startDistance)+"\n"+String.format("%.0f",currentTime)+"\n"+String.format("%.0f",startTime),Toast.LENGTH_LONG);
+
+                txtVelIst.setText(String.format("%.0f Km/h", currentSpeed));
+
+                txtMedSpeedSplit.setText(String.format("%.0f Km/h", mediumSpeedSplit));
+                txtMaxSpeedSplit.setText(String.format("%.0f Km/h", maxSpeedSplit));
+                txtMedSpeedStart.setText(String.format("%.0f Km/h", mediumSpeedStart));
+                txtMaxSpeedStart.setText(String.format("%.0f Km/h", maxSpeedStart));
+
+                txtDistSplit.setText(String.format("%.1f Km", splitDistance/1000));
+                txtDistStart.setText(String.format("%.1f Km", startDistance/1000));
+            }
         }
 
-        private long getDistance()
+        private double getDistance()
         {
             //Calcola la distanza presente tra currentLocation e previousLocation
-            long distance=0;
-            long raggioSfera=6375000;   //Più o meno dalle nostre parti vale così...
+            double distance=0;
+            double raggioSfera=6375000;   //Più o meno dalle nostre parti vale così...
 
             if(mCurrentLocation != null && mPreviousLocation != null)
             {
@@ -653,7 +713,7 @@ public class TripActivity extends FragmentActivity implements ActionBar.TabListe
                 double distLat=diffLatRad * raggioSfera;
                 double distLon=diffLonRad * raggioSfera;
 
-                distance=(long) Math.sqrt(Math.pow(distLat,(double) 2)+Math.pow(distLon,(double) 2));
+                distance=Math.sqrt(Math.pow(distLat,(double) 2)+Math.pow(distLon,(double) 2));
             }
 
             return distance;

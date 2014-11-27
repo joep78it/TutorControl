@@ -28,7 +28,7 @@
         android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
         android:textStyle="bold"
         android:gravity="center_horizontal"
-        android:textSize="60dp" />
+        android:textSize="40dp" />
 
     <Chronometer
         android:layout_width="fill_parent"
@@ -37,7 +37,7 @@
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/chrSplit"
         android:gravity="right"
-        android:textSize="30dp" />
+        android:textSize="20dp" />
 
     <LinearLayout
         android:orientation="horizontal"
@@ -45,7 +45,8 @@
         android:layout_height="wrap_content"
         android:gravity="bottom"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:id="@+id/linearLayout3">
 
         <Button
             android:layout_width="wrap_content"
@@ -75,15 +76,123 @@
         android:layout_below="@+id/chrTotal" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/lbl_zero_kmh"
         android:id="@+id/txtVelIst"
         android:layout_below="@+id/textView2"
         android:layout_centerHorizontal="true"
-        android:textSize="60dp"
+        android:textSize="40dp"
         android:textStyle="bold"
         android:gravity="center_horizontal" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/lbl_min_max_sp_split"
+        android:id="@+id/textView4"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/txtVelIst" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/linearLayout"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/textView4">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/lbl_zero_kmh"
+            android:id="@+id/txtSpMedSpl"
+            android:layout_weight="1"
+            android:textSize="25dp"
+            android:gravity="center_horizontal" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/lbl_zero_kmh"
+            android:id="@+id/txtSpMaxSpl"
+            android:layout_weight="1"
+            android:textSize="25dp"
+            android:gravity="center_horizontal" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView5"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/linearLayout2">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/lbl_zero_kmh"
+            android:id="@+id/txtSpMedSta"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:textSize="25dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/lbl_zero_kmh"
+            android:id="@+id/txtSpMaxSta"
+            android:gravity="center_horizontal"
+            android:layout_weight="1"
+            android:textSize="25dp" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/lbl_med_max_sp_start"
+        android:id="@+id/textView5"
+        android:layout_below="@+id/linearLayout"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/lbl_distanza"
+        android:id="@+id/textView3"
+        android:layout_below="@+id/linearLayout2"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/lbl_zero_dist"
+        android:id="@+id/txtSplitDist"
+        android:textSize="40dp"
+        android:textStyle="bold"
+        android:gravity="center_horizontal"
+        android:layout_below="@+id/textView3"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/lbl_zero_dist"
+        android:id="@+id/txtStartDIst"
+        android:textSize="20dp"
+        android:gravity="right"
+        android:layout_below="@+id/txtSplitDist"
+        android:layout_alignEnd="@+id/txtSplitDist" />
 
 </RelativeLayout>
